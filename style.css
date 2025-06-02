@@ -1,0 +1,779 @@
+/* Глобальные стили и переменные */
+:root {
+    --primary-color: #1a1a2e; /* Глубокий темно-синий */
+    --secondary-color: #16213e; /* Чуть светлее основного */
+    --accent-color: #e94560;   /* Яркий акцентный (коралловый/розовый) */
+    --text-color: #e0e0e0;     /* Светлый текст */
+    --text-secondary-color: #a0a0a0; /* Менее важный текст */
+    --card-bg-color: #1f2847; /* Фон карточек */
+    --border-color: #3a3a5a;
+    --font-primary: 'Montserrat', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --border-radius: 8px;
+}
+
+[data-theme="light"] {
+    --primary-color: #f4f7f6;
+    --secondary-color: #ffffff;
+    --accent-color: #007bff;
+    --text-color: #333333;
+    --text-secondary-color: #555555;
+    --card-bg-color: #ffffff;
+    --border-color: #dddddd;
+    --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px; /* Базовый размер для rem */
+}
+
+body {
+    font-family: var(--font-secondary);
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    line-height: 1.7;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* Предотвращение горизонтального скролла */
+}
+
+/* Кастомный курсор */
+.cursor-dot,
+.cursor-outline {
+    pointer-events: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+}
+.cursor-outline {
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--accent-color);
+    opacity: 0.5;
+}
+body:hover .cursor-dot,
+body:hover .cursor-outline {
+    opacity: 1;
+}
+a:hover ~ .cursor-outline,
+button:hover ~ .cursor-outline,
+.skill-card:hover ~ .cursor-outline {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.7;
+}
+
+
+/* Навигация */
+#navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(22, 33, 62, 0.85); /* --secondary-color с прозрачностью */
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 1rem 0;
+    transition: top 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+[data-theme="light"] #navbar {
+    background-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+#navbar.nav-scrolled {
+    padding: 0.75rem 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+#navbar.nav-hidden {
+    top: -100px;
+}
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+.nav-logo {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+.nav-logo:hover {
+    transform: scale(1.1);
+}
+#navbar ul {
+    list-style: none;
+    display: flex;
+}
+#navbar ul li {
+    margin-left: 1.5rem;
+}
+#navbar ul li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+#navbar ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
+}
+#navbar ul li a:hover,
+#navbar ul li a.active {
+    color: var(--accent-color);
+}
+#navbar ul li a:hover::after,
+#navbar ul li a.active::after {
+    width: 100%;
+}
+
+.theme-toggle-button {
+    background: none;
+    border: 1px solid var(--text-secondary-color);
+    color: var(--text-secondary-color);
+    font-size: 1.2rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+.theme-toggle-button:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+
+/* Hero Section */
+#hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 2rem;
+    position: relative;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    overflow: hidden; /* Для анимации фона */
+}
+.hero-content {
+    z-index: 2;
+    max-width: 800px;
+}
+.avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+.avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid var(--accent-color);
+    object-fit: cover;
+    box-shadow: 0 0 25px rgba(233, 69, 96, 0.5); /* Тень от акцентного цвета */
+    transition: transform 0.3s ease;
+}
+.avatar:hover {
+    transform: scale(1.05);
+}
+.status-indicator {
+    width: 20px;
+    height: 20px;
+    background-color: #2ecc71; /* Зеленый - доступен */
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    box-shadow: 0 0 10px #2ecc71;
+}
+#hero h1 {
+    font-family: var(--font-primary);
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    letter-spacing: 1px;
+}
+.pronouns {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-secondary-color);
+    vertical-align: middle;
+}
+.tagline {
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--text-secondary-color);
+    margin-bottom: 0.5rem;
+}
+.location {
+    font-size: 1rem;
+    color: var(--text-secondary-color);
+    margin-bottom: 1.5rem;
+}
+.location i {
+    margin-right: 0.5rem;
+    color: var(--accent-color);
+}
+
+.social-links a {
+    color: var(--text-secondary-color);
+    font-size: 1.8rem;
+    margin: 0 0.75rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.social-links a:hover {
+    color: var(--accent-color);
+    transform: translateY(-3px);
+}
+
+.scroll-down-arrow {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: var(--text-secondary-color);
+    animation: bounce 2s infinite;
+    text-decoration: none;
+}
+.scroll-down-arrow:hover {
+    color: var(--accent-color);
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-15px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-7px);
+    }
+}
+
+.hero-background-animation {
+    /* Пример: можно добавить CSS-градиент анимацию или частицы через JS */
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* background: linear-gradient(45deg, rgba(233, 69, 96, 0.1), rgba(22, 33, 62, 0.1) ); */
+    /* background-size: 400% 400%; */
+    /* animation: gradientBG 15s ease infinite; */
+    z-index: 0;
+}
+/* @keyframes gradientBG {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+} */
+
+
+/* Общие стили для секций */
+.section {
+    padding: 6rem 0; /* Больше отступов сверху/снизу */
+    border-bottom: 1px solid var(--border-color);
+}
+.section:last-of-type {
+    border-bottom: none;
+}
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+.section-title {
+    font-family: var(--font-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    color: var(--text-color);
+}
+.section-title span {
+    display: inline-block;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+.section-title span::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 4px;
+    background-color: var(--accent-color);
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+.icon-prefix {
+    margin-right: 0.75rem;
+    color: var(--accent-color);
+}
+
+/* About Section */
+#about .about-content {
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+}
+#about .about-text {
+    flex: 2;
+}
+#about .about-text p {
+    margin-bottom: 1rem;
+    color: var(--text-secondary-color);
+}
+#about .about-text p:last-child {
+    margin-bottom: 0;
+}
+#about .about-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.about-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    object-fit: cover;
+    max-height: 350px;
+}
+.interactive-hobby {
+    font-weight: 600;
+    color: var(--accent-color);
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px dashed var(--accent-color);
+}
+.interactive-hobby::after { /* Tooltip */
+    content: attr(data-text);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    box-shadow: var(--shadow);
+    z-index: 10;
+}
+.interactive-hobby:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Skills Section */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+.skill-card {
+    background-color: var(--card-bg-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-color);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid transparent; /* Для эффекта при наведении */
+}
+.skill-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent-color);
+}
+.skill-card i { /* Font Awesome иконки */
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+    display: block;
+}
+.skill-icon-svg { /* SVG иконки */
+    width: 40px; /* или 2.5rem */
+    height: 40px; /* или 2.5rem */
+    margin-bottom: 1rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    /* Для SVG, которые могут быть светлыми на светлом фоне */
+    filter: var(--svg-filter, none);
+}
+[data-theme="light"] .skill-icon-svg {
+     /* Инвертировать или изменить цвет SVG на светлой теме, если нужно */
+     /* filter: invert(1); */
+}
+
+
+/* Experience Section (Timeline) */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.timeline::after { /* Центральная линия */
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: var(--border-color);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -2px;
+    border-radius: 2px;
+}
+[data-theme="light"] .timeline::after {
+    background-color: #ccc;
+}
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+}
+/* Кружки на линии */
+.timeline-item .timeline-icon {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    right: -20px;
+    background-color: var(--accent-color);
+    top: 25px;
+    border-radius: 50%;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    color: white;
+    border: 3px solid var(--primary-color);
+}
+[data-theme="light"] .timeline-item .timeline-icon {
+    border: 3px solid var(--secondary-color);
+}
+
+/* Размещение контейнеров слева и справа */
+.timeline-item:nth-child(odd) {
+    left: 0;
+}
+.timeline-item:nth-child(even) {
+    left: 50%;
+}
+/* Стрелки для контейнеров (необязательно, можно убрать для чистоты) */
+.timeline-item:nth-child(odd) .timeline-content::before {
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 28px;
+    width: 0;
+    z-index: 1;
+    right: 30px;
+    border: medium solid var(--card-bg-color);
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent var(--card-bg-color);
+}
+.timeline-item:nth-child(even) .timeline-content::before {
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 28px;
+    width: 0;
+    z-index: 1;
+    left: 30px;
+    border: medium solid var(--card-bg-color);
+    border-width: 10px 10px 10px 0;
+    border-color: transparent var(--card-bg-color) transparent transparent;
+}
+/* Фикс для стрелок при выходе за пределы */
+.timeline-item:nth-child(odd) .timeline-icon {
+    right: -20px; /* Скорректировано */
+}
+.timeline-item:nth-child(even) .timeline-icon {
+    left: -20px; /* Скорректировано */
+}
+
+.timeline-content {
+    padding: 20px 30px;
+    background-color: var(--card-bg-color);
+    position: relative;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+.timeline-content h3 {
+    font-family: var(--font-primary);
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+.timeline-content .timeline-company {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-secondary-color);
+    margin-bottom: 1rem;
+}
+.timeline-content ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+.timeline-content ul li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    position: relative;
+    padding-left: 20px;
+}
+.timeline-content ul li::before {
+    content: '\f00c'; /* Font Awesome check icon */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+}
+
+/* Contact Section */
+#contact p {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    color: var(--text-secondary-color);
+}
+.contact-methods {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.8rem;
+    background-color: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+}
+.cta-button i {
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+.cta-button:hover {
+    background-color: #d63031; /* Darken accent */
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5);
+}
+.cta-button.github { background-color: #333; }
+.cta-button.github:hover { background-color: #222; }
+.cta-button.linkedin { background-color: #0077b5; }
+.cta-button.linkedin:hover { background-color: #005582; }
+.cta-button.email { background-color: #55acee; } /* Можно сделать свой цвет */
+.cta-button.email:hover { background-color: #3282b8; }
+
+[data-theme="light"] .cta-button {
+    background-color: var(--accent-color);
+    color: white; /* Для лучшего контраста на синем */
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+[data-theme="light"] .cta-button:hover {
+    background-color: #0056b3; /* Darken accent for light theme */
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+}
+[data-theme="light"] .cta-button.github { background-color: #333; color:white;}
+[data-theme="light"] .cta-button.github:hover { background-color: #222; }
+[data-theme="light"] .cta-button.linkedin { background-color: #0077b5; color:white;}
+[data-theme="light"] .cta-button.linkedin:hover { background-color: #005582; }
+[data-theme="light"] .cta-button.email { background-color: #55acee; color:white;}
+[data-theme="light"] .cta-button.email:hover { background-color: #3282b8; }
+
+
+.github-stats {
+    font-size: 0.9rem;
+    color: var(--text-secondary-color);
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+/* Footer */
+#footer {
+    background-color: var(--secondary-color);
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--text-secondary-color);
+    font-size: 0.9rem;
+}
+[data-theme="light"] #footer {
+    background-color: #e9ecef;
+}
+.footer-content p {
+    margin-bottom: 0.5rem;
+}
+.footer-socials {
+    margin-top: 1rem;
+}
+.footer-socials a {
+    color: var(--text-secondary-color);
+    font-size: 1.5rem;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+}
+.footer-socials a:hover {
+    color: var(--accent-color);
+}
+
+/* Scroll to Top Button */
+#scrollTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 999;
+    border: none;
+    outline: none;
+    background-color: var(--accent-color);
+    color: white;
+    cursor: pointer;
+    padding: 12px 15px;
+    border-radius: 50%; /* Круглая кнопка */
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+#scrollTopBtn:hover {
+    background-color: #d63031; /* Darken accent */
+    transform: scale(1.1);
+}
+[data-theme="light"] #scrollTopBtn {
+    background-color: var(--accent-color); /* Синий для светлой темы */
+}
+[data-theme="light"] #scrollTopBtn:hover {
+    background-color: #0056b3; /* Darken blue */
+}
+
+/* Анимации при скролле */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Задержки для элементов */
+.animate-on-scroll.delay-1 { transition-delay: 0.1s; }
+.animate-on-scroll.delay-2 { transition-delay: 0.2s; }
+.animate-on-scroll.delay-3 { transition-delay: 0.3s; }
+.animate-on-scroll.delay-4 { transition-delay: 0.4s; }
+
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    #hero h1 { font-size: 2.5rem; }
+    .tagline { font-size: 1.1rem; }
+    .section-title { font-size: 2rem; }
+    .nav-container { padding: 0 1rem; }
+    #navbar ul li { margin-left: 1rem; }
+    #about .about-content { flex-direction: column; align-items: center; }
+    #about .about-image-container { margin-top: 2rem; max-width: 400px; }
+    .timeline::after { left: 20px; } /* Сдвигаем линию для мобильных */
+    .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+    .timeline-item:nth-child(even) { left: 0%; } /* Все слева */
+    .timeline-item .timeline-icon { left: 0px; } /* Иконки слева */
+    .timeline-item:nth-child(odd) .timeline-content::before,
+    .timeline-item:nth-child(even) .timeline-content::before { /* Стрелки для мобильных */
+        left: -10px; /* Скорректировать для левого расположения */
+        border-width: 10px 10px 10px 0;
+        border-color: transparent var(--card-bg-color) transparent transparent;
+    }
+}
+
+@media (max-width: 768px) {
+    html { font-size: 15px; }
+    #navbar { padding: 0.8rem 0; }
+    #navbar.nav-scrolled { padding: 0.6rem 0; }
+    #navbar ul { display: none; /* TODO: Сделать бургер-меню */ }
+    .nav-logo { font-size: 1.6rem; }
+    .hero-content { padding-top: 60px; /* Компенсация за навбар */ }
+    .avatar { width: 120px; height: 120px; }
+    .status-indicator { width: 15px; height: 15px; bottom: 8px; right: 8px; }
+    #hero h1 { font-size: 2rem; }
+    .tagline { font-size: 1rem; }
+    .skills-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+    .skill-card { padding: 1rem; }
+    .skill-card i, .skill-icon-svg { font-size: 2rem; width: 30px; height: 30px; }
+    .contact-methods { flex-direction: column; align-items: center; }
+    .cta-button { width: 80%; max-width: 300px; justify-content: center; }
+    .section { padding: 4rem 0; }
+    .section-title { margin-bottom: 2rem; }
+    #scrollTopBtn { bottom: 15px; right: 15px; padding: 10px 12px; font-size: 1rem; }
+}
+
+@media (max-width: 480px) {
+    html { font-size: 14px; }
+    .avatar { width: 100px; height: 100px; }
+    #hero h1 { font-size: 1.8rem; }
+    .tagline { font-size: 0.9rem; }
+    .pronouns { font-size: 0.8rem; }
+    .social-links a { font-size: 1.5rem; margin: 0 0.5rem; }
+    .section-title { font-size: 1.8rem; }
+    .timeline-item { padding-left: 60px; padding-right: 15px;}
+    .timeline-item .timeline-icon { width: 30px; height: 30px; font-size: 1rem;}
+    .timeline-content { padding: 15px 20px;}
+    .timeline-content h3 { font-size: 1.2rem;}
+
+    /* Скрытие кастомного курсора на мобильных для лучшего UX */
+    .cursor-dot, .cursor-outline {
+        display: none;
+    }
+}
